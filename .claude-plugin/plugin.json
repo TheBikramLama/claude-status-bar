@@ -15,6 +15,5 @@
     "status-bar",
     "rate-limits",
     "context"
-  ],
-  "hooks": "./hooks/hooks.json"
+  ]
 }
