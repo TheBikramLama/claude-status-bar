@@ -1,7 +1,7 @@
 {
   "name": "claude-status-bar",
   "displayName": "Claude Status Bar",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Three-line status bar: rate-limit bars with reset times, project/branch/git dot, and effort/thinking/output-style.",
   "author": {
     "name": "Bikram Lama",

@@ -35,16 +35,24 @@ try:
         data = {}
 except Exception:
     data = {}
-if "statusLine" not in data:
-    data["statusLine"] = {"type": "command", "command": cmd}
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    tmp = path + ".tmp"
-    with open(tmp, "w") as f:
-        json.dump(data, f, indent=2)
-    os.replace(tmp, path)
+sl = data.get("statusLine")
+# Create if absent; otherwise only touch a statusLine that is ours (same
+# command) so a user's own status line is never clobbered, and backfill
+# refreshInterval for existing installs that predate it.
+if not isinstance(sl, dict):
+    data["statusLine"] = {"type": "command", "command": cmd, "refreshInterval": 1}
+elif sl.get("command") == cmd and sl.get("refreshInterval") != 1:
+    sl["refreshInterval"] = 1
+else:
+    sys.exit(0)
+os.makedirs(os.path.dirname(path), exist_ok=True)
+tmp = path + ".tmp"
+with open(tmp, "w") as f:
+    json.dump(data, f, indent=2)
+os.replace(tmp, path)
 PY
 elif command -v jq >/dev/null 2>&1 && [ -f "$settings" ]; then
-  tmp="$(mktemp)" && jq --arg c "$cmd" 'if .statusLine then . else .statusLine={type:"command",command:$c} end' "$settings" >"$tmp" 2>/dev/null && mv "$tmp" "$settings"
+  tmp="$(mktemp)" && jq --arg c "$cmd" 'if (.statusLine|type)!="object" then .statusLine={type:"command",command:$c,refreshInterval:1} elif .statusLine.command==$c then .statusLine.refreshInterval=1 else . end' "$settings" >"$tmp" 2>/dev/null && mv "$tmp" "$settings"
 fi
 
 exit 0
