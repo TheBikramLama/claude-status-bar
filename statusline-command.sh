@@ -238,7 +238,13 @@ for f in [
 fi
 
 if [ -n "$json_lines" ]; then
-  mapfile -t _fields <<< "$json_lines"
+  # Portable line-split (macOS ships Bash 3.2, which has no `mapfile`). A
+  # `while read` loop over a here-string yields the same array as `mapfile -t`
+  # on Bash 3.2/4/5 alike, preserving blank fields the JSON left empty.
+  _fields=()
+  while IFS= read -r _line; do
+    _fields+=("$_line")
+  done <<< "$json_lines"
   model="${_fields[0]:-}"
   dir="${_fields[1]:-}"
   five_pct="${_fields[2]:-}"
@@ -353,7 +359,11 @@ print(oauth.get("emailAddress") or "")
   fi
 
   if [ -n "$acct_lines" ]; then
-    mapfile -t _acct_fields <<< "$acct_lines"
+    # Portable line-split (see note above): Bash 3.2 has no `mapfile`.
+    _acct_fields=()
+    while IFS= read -r _line; do
+      _acct_fields+=("$_line")
+    done <<< "$acct_lines"
     org_name="${_acct_fields[0]:-}"
     email_addr="${_acct_fields[1]:-}"
   fi
