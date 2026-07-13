@@ -1,3 +1,7 @@
+# DEPRECATED
+
+Please use this repo: [https://github.com/LipiTechnology/clade-code-statusbar](https://github.com/LipiTechnology/clade-code-statusbar)
+
 # Claude Status Bar
 
 A three-line status bar for Claude Code:
